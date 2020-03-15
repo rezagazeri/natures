@@ -24,7 +24,7 @@ app.use('/api', limiter);
 
 const tourRouter = require('./routes/routtours');
 const userRouter = require('./routes/routuser');
-const riviewRouter = require('./routes/routreview');
+const reviewRouter = require('./routes/routreview');
 
 app.use(express.json({
   limit: '10kb'
@@ -50,7 +50,7 @@ app.use(express.static(`${__dirname}/public`)); //for serve file in public folde
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/riviews', riviewRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 app.all('*', (req, res, next) => {
   next(AppError(`can not find ${req.originalUrl} on this srver`, 404));

@@ -2,6 +2,10 @@ const Tour = require('../models/modeltours');
 const ApiFeachers = require('../utils/apiFeachers');
 const AppError = require('../utils/AppError');
 const catchError = require('../utils/catchAsync');
+const {
+  deleteOne,
+  updateOne
+} = require('./../controllers/handlerFactory');
 
 exports.getAlltours = catchError(async (req, res, next) => {
   const feachers = new ApiFeachers(Tour.find(), req.query)
@@ -20,7 +24,7 @@ exports.getAlltours = catchError(async (req, res, next) => {
 });
 
 exports.getTour = catchError(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id);
+  const tour = await Tour.findById(req.params.id).populate('reviews');
   if (!tour) {
     return next(new AppError('can not find tour with id', 404));
   }
@@ -43,31 +47,9 @@ exports.createTour = catchError(async (req, res, next) => {
   });
 });
 
-exports.updateTour = catchError(async (req, res, next) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true
-  });
-  if (!tour) {
-    return next(new AppError('can not find tour with id', 404));
-  }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour
-    }
-  });
-});
-exports.deleteTour = catchError(async (req, res, next) => {
-  const tour = await Tour.findByIdAndDelete(req.params.id);
-  if (!tour) {
-    return next(new AppError('can not find tour with id', 404));
-  }
-  res.status(204).json({
-    status: 'success',
-    data: null
-  });
-});
+exports.updateTour = updateOne(Tour);
+exports.deleteTour = deleteOne(Tour);
+
 exports.getToursatats = catchError(async (req, res, next) => {
   const stats = await Tour.aggregate([{
       $match: {

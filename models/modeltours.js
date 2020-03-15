@@ -142,8 +142,14 @@ tourSchema.pre('aggregate', function (next) {
   });
   next();
 });
+//virtual populating reviews in tour
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tours',
+  localField: '_id'
+});
 tourSchema.virtual('dateToweak').get(function () {
-  return this.duration / 7;
+  return this.duration / 7; //chon bayed roye yek property kari anjam shavad get() estefadeh mikonim
 });
 
 const Tour = mongoose.model('Tour', tourSchema);

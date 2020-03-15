@@ -16,7 +16,8 @@ const {
   forgotpasswort,
   ressetPasswort,
   protected,
-  updatePasswort
+  updatePasswort,
+  routRestrictOnlyBy
 } = require('../controllers/authUsercontroller');
 
 const router = express.Router();
@@ -38,6 +39,6 @@ router
   .route('/:id')
   .get(getUser)
   .patch(updateUser)
-  .delete(deleteUser);
+  .delete(protected, routRestrictOnlyBy('admin'), deleteUser);
 
 module.exports = router;

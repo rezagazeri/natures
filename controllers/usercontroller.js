@@ -2,6 +2,10 @@ const fs = require('fs');
 const User = require('../models/modelusers');
 const AppError = require('../utils/AppError');
 const catchError = require('../utils/catchAsync');
+const {
+  deleteOne
+} = require('./../controllers/handlerFactory');
+
 
 const Users = JSON.parse(
   fs.readFileSync(`${__dirname}/../data-dev/users.json`)
@@ -60,18 +64,8 @@ exports.updateUser = (req, res) => {
     });
   }
 };
-exports.deleteUser = (req, res) => {
-  const id = req.params.id * 1;
-  const user = Users.find(el => el.id === id);
-  if (user) {
-    res.status(201).json({
-      status: 'success',
-      data: {
-        user
-      }
-    });
-  }
-};
+exports.deleteUser = deleteOne(User); //delete complete one user by Admin user
+
 exports.updateMe = catchError(async (req, res, next) => {
   //1) check req contain passwort or not if  yes ==error
   if (req.body.passwort || req.body.confirmpasswort) {

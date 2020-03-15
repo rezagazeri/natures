@@ -8,13 +8,16 @@ const {
   deleteTour,
   getToursatats,
   getMonthlyPlan
-} = require('../controllers/tourcontrollers');
+} = require('./../controllers/tourcontrollers');
 const {
   routRestrictOnlyBy,
   protected
-} = require('../controllers/authUsercontroller');
+} = require('./../controllers/authUsercontroller');
+const reviewRouter = require('./../routes/routreview');
 
 const router = express.Router();
+
+router.use('/:tourId/reviews', reviewRouter);
 
 router
   .route('/')
