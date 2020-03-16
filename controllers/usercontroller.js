@@ -3,7 +3,10 @@ const User = require('../models/modelusers');
 const AppError = require('../utils/AppError');
 const catchError = require('../utils/catchAsync');
 const {
-  deleteOne
+  deleteOne,
+  updateOne,
+  getAll,
+  getOne
 } = require('./../controllers/handlerFactory');
 
 
@@ -17,26 +20,8 @@ const filterObj = (InputObject, ...allowdfield) => {
   });
   return newObj;
 };
-exports.getAllusers = (req, res) => {
-  res.status(200).json({
-    statuse: 'success',
-    results: Users.length,
-    data: {
-      Users
-    }
-  });
-};
-
-exports.getUser = (req, res) => {
-  const newid = req.params.id * 1;
-  const newUser = Users.find(el => el.id === newid);
-  res.status(201).json({
-    status: 'success',
-    data: {
-      Users: newUser
-    }
-  });
-};
+exports.getAllusers = getAll(User);
+exports.getUser = getOne(User);
 
 exports.createUser = (req, res) => {
   const newUser = req.body;
@@ -48,23 +33,9 @@ exports.createUser = (req, res) => {
   });
 };
 
-exports.updateUser = (req, res) => {
-  const id = req.params.id * 1;
-  const user = Users.find(el => el.id === id);
-  if (user) {
-    const newUser = {
-      user,
-      ...req.body
-    };
-    res.status(201).json({
-      status: 'success',
-      data: {
-        User: newUser
-      }
-    });
-  }
-};
 exports.deleteUser = deleteOne(User); //delete complete one user by Admin user
+exports.updateUser = updateOne(User); //updade  one user by Admin user
+
 
 exports.updateMe = catchError(async (req, res, next) => {
   //1) check req contain passwort or not if  yes ==error
