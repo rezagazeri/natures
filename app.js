@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+const path = require('path');
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -10,6 +11,11 @@ const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/AppError');
 
 const app = express();
+
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(express.static(path.join(__dirname, 'public'))); //for serve file in public folder
 
 //set HTTP headers security
 app.use(helmet());
@@ -26,9 +32,11 @@ const tourRouter = require('./routes/routtours');
 const userRouter = require('./routes/routuser');
 const reviewRouter = require('./routes/routreview');
 
-app.use(express.json({
-  limit: '10kb'
-})); //client can not able request gt : 10kb
+app.use(
+  express.json({
+    limit: '10kb'
+  })
+); //client can not able request gt : 10kb
 
 //protect app againts NOSQL Injection with delete any $
 app.use(mongoSanitizer());
@@ -37,23 +45,27 @@ app.use(mongoSanitizer());
 app.use(xssCleaner());
 
 //protect app againt Http parameter pollution
-app.use(hpp({
-  whitelist: [
-    'duration',
-    'price',
-    'difficulty',
-    'ratingsAverage',
-    'startDates'
-  ]
-}))
-app.use(express.static(`${__dirname}/public`)); //for serve file in public folder
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'price',
+      'difficulty',
+      'ratingsAverage',
+      'startDates'
+    ]
+  })
+);
 
+app.get('/', (req, res) => {
+  res.status(200).render('base')
+})
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
 
 app.all('*', (req, res, next) => {
-  next(AppError(`can not find ${req.originalUrl} on this srver`, 404));
+  next(new AppError(`can not find ${req.originalUrl} on this srver`, 404));
 });
 
 app.use(globalErrorHandler);
