@@ -4,7 +4,7 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  username: {
+  name: {
     type: 'string',
     required: [true, 'A User must have a username']
   },
@@ -36,6 +36,7 @@ const userSchema = new mongoose.Schema({
       message: 'please corret passwort'
     }
   },
+  photo: String,
   changePasswort: Date,
   resetPasswort: String,
   resetPasswortExpired: Date,
@@ -54,17 +55,17 @@ userSchema.pre(`/^find/`, function (next) {
   next();
 });
 
-userSchema.pre('save', function (next) {
-  if (!this.isModified('Passwort') || this.isNew) return next();
-  this.changePasswort = Date.now() - 1000;
-  next();
-})
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('passwort')) return next();
-  this.passwort = await bcrypt.hash(this.passwort, 12);
-  this.confirmpasswort = undefined;
-  next();
-});
+// userSchema.pre('save', function (next) {
+//   if (!this.isModified('Passwort') || this.isNew) return next();
+//   this.changePasswort = Date.now() - 1000;
+//   next();
+// })
+// userSchema.pre('save', async function (next) {
+//   if (!this.isModified('passwort')) return next();
+//   this.passwort = await bcrypt.hash(this.passwort, 12);
+//   this.confirmpasswort = undefined;
+//   next();
+// });
 userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword

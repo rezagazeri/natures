@@ -2,13 +2,12 @@ const mongoose = require('mongoose');
 const dotEnv = require('dotenv');
 
 dotEnv.config({
-    path: './config.env'
+    path: './../config.env'
 });
 const DB = process.env.DATABASE.replace(
     '<PASSWORD>',
     process.env.DATABASE_PASSWORD
 );
-
 exports.DBconnection = async () => {
     try {
         await mongoose.connect(DB, {

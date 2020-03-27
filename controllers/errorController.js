@@ -17,6 +17,9 @@ const handlerJsonWebTokenError = () => {
   return new AppError(message, 401);
 
 }
+const handleJWTExpiredError = () =>
+  new AppError('Your token has expired! Please log in again.', 401);
+
 const handlerDuplicateError = err => {
   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
   const message = `Duplicate field value: ${value}. Please use another value!`;
@@ -62,7 +65,7 @@ module.exports = (err, req, res, next) => {
     if (error.code === 11000) error = handlerDuplicateError(error);
     if (error.name === 'ValidationError') error = handlerValidatorError(error);
     if (error.name === 'JsonWebTokenError') error = handlerJsonWebTokenError();
-
+    if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
     sendErrorprod(error, res);
   } else if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);

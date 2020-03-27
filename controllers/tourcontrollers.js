@@ -6,12 +6,12 @@ const {
   updateOne,
   getAll,
   getOne,
-  createOne,
+  createOne
 } = require('./../controllers/handlerFactory');
 
 exports.getAlltours = getAll(Tour);
 exports.getTour = getOne(Tour, {
-  path: 'reviews',
+  path: 'reviews'
 });
 exports.createTour = createOne(Tour);
 exports.updateTour = updateOne(Tour);
@@ -21,74 +21,74 @@ exports.getToursatats = catchError(async (req, res, next) => {
   const stats = await Tour.aggregate([{
       $match: {
         price: {
-          $gte: 1000,
-        },
-      },
+          $gte: 1000
+        }
+      }
     },
     {
       $group: {
         _id: null,
         numTour: {
-          $sum: 1,
+          $sum: 1
         },
         avrRating: {
-          $avg: '$ratingsAverage',
+          $avg: '$ratingsAverage'
         },
         numRating: {
-          $sum: '$ratingsAverage',
+          $sum: '$ratingsAverage'
         },
         avrPrice: {
-          $avg: '$price',
+          $avg: '$price'
         },
         minPrice: {
-          $min: '$price',
+          $min: '$price'
         },
         maxPrice: {
-          $max: '$price',
-        },
-      },
-    },
+          $max: '$price'
+        }
+      }
+    }
   ]);
   res.status(200).json({
     status: 'success',
     data: {
-      stats,
-    },
+      stats
+    }
   });
 });
 exports.getMonthlyPlan = catchError(async (req, res, next) => {
   const year = req.params.year * 1; // 2021
   const plan = await Tour.aggregate([{
-      $unwind: '$startDates',
+      $unwind: '$startDates'
     },
     {
       $match: {
         startDates: {
           $gte: new Date(`${year}-01-01`),
-          $lte: new Date(`${year}-12-31`),
-        },
-      },
+          $lte: new Date(`${year}-12-31`)
+        }
+      }
     },
     {
       $group: {
         _id: {
-          $month: '$startDates',
+          $month: '$startDates'
         },
         numTourStarts: {
-          $sum: 1,
+          $sum: 1
         },
         tours: {
-          $push: '$name',
-        },
-      },
-    },
+          $push: '$name'
+        }
+      }
+    }
   ]);
 
   res.status(200).json({
     status: 'success',
     data: {
-      plan,
-    },
+      plan
+    }
   });
 });
 ///tours-whitin/:distance/center/:lnglat/unit/:unit
@@ -108,16 +108,16 @@ exports.getDistanceToursCenter = catchError(async (req, res, next) => {
       $geoWithin: {
         $centerSphere: [
           [lng, lat], radius
-        ],
-      },
-    },
+        ]
+      }
+    }
   });
   res.status(200).json({
     status: 'success',
     resualt: tours.length,
     data: {
-      tours,
-    },
+      tours
+    }
   });
 });
 exports.getAllTourDistances = catchError(async (req, res, next) => {

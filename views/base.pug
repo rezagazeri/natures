@@ -6,11 +6,11 @@ html
         link(href = '/css/style.css' rel = 'stylesheet')
         link(href ='/img/favicon.png' type = 'image/png' rel = 'shortcut icon')
         link(href = 'https://fonts.googleapis.com/css?family=Lato:300,300i,700' rel = 'stylesheet')
-        title Natours | 
+        title Natours | #{titel}
     body
         // header
         include _header
         // main block        
-        section.overview
+        block content
         // footer
         include _footer

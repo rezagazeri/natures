@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 // const validator = require('validator');
+const slugify = require('slugify');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -126,6 +127,11 @@ tourSchema.post('save', function(doc, next) {
   console.log(doc.name);
   next();
 });
+tourSchema.pre('save', function(next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
 tourSchema.pre(`/^find/`, function(next) {
   this.find({
     secretTour: {

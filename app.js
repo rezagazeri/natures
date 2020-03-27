@@ -7,6 +7,12 @@ const mongoSanitizer = require('express-mongo-sanitize');
 const xssCleaner = require('xss-clean');
 const hpp = require('hpp');
 
+
+const tourRouter = require('./routes/routtours');
+const userRouter = require('./routes/routuser');
+const reviewRouter = require('./routes/routreview');
+const viewRouter = require('./routes/routview');
+
 const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/AppError');
 
@@ -27,10 +33,6 @@ const limiter = rateLimit({
   message: 'To many requests from this IP,please try again in an houre!'
 });
 app.use('/api', limiter);
-
-const tourRouter = require('./routes/routtours');
-const userRouter = require('./routes/routuser');
-const reviewRouter = require('./routes/routreview');
 
 app.use(
   express.json({
@@ -56,13 +58,11 @@ app.use(
     ]
   })
 );
-
-app.get('/', (req, res) => {
-  res.status(200).render('base')
-})
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+
 
 app.all('*', (req, res, next) => {
   next(new AppError(`can not find ${req.originalUrl} on this srver`, 404));
