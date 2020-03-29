@@ -17,12 +17,19 @@ exports.renderOverviewPage = catchError(async (req, res, next) => {
   });
 });
 exports.renderTourPage = catchError(async (req, res, next) => {
-  const tour = await Tour.findOne({ slug: req.params.slug }).populate({
+  const tour = await Tour.findOne({
+    slug: req.params.slug
+  }).populate({
     path: 'reviews',
     fields: 'review rating user'
   });
   res.status(200).render('tour', {
-    titel: 'tour',
+    titel: `${tour.name} tour`,
     tour
   });
 });
+exports.renderLoginPage = catchError(async (req, res, next) => {
+  res.status(200).render('login', {
+    titel: 'login'
+  })
+})

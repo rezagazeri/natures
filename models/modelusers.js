@@ -55,17 +55,17 @@ userSchema.pre(`/^find/`, function (next) {
   next();
 });
 
-// userSchema.pre('save', function (next) {
-//   if (!this.isModified('Passwort') || this.isNew) return next();
-//   this.changePasswort = Date.now() - 1000;
-//   next();
-// })
-// userSchema.pre('save', async function (next) {
-//   if (!this.isModified('passwort')) return next();
-//   this.passwort = await bcrypt.hash(this.passwort, 12);
-//   this.confirmpasswort = undefined;
-//   next();
-// });
+userSchema.pre('save', function (next) {
+  if (!this.isModified('Passwort') || this.isNew) return next();
+  this.changePasswort = Date.now() - 1000;
+  next();
+})
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('passwort')) return next();
+  this.passwort = await bcrypt.hash(this.passwort, 12);
+  this.confirmpasswort = undefined;
+  next();
+});
 userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword

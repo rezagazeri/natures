@@ -6,7 +6,8 @@ const helmet = require('helmet');
 const mongoSanitizer = require('express-mongo-sanitize');
 const xssCleaner = require('xss-clean');
 const hpp = require('hpp');
-
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 const tourRouter = require('./routes/routtours');
 const userRouter = require('./routes/routuser');
@@ -17,7 +18,7 @@ const globalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/AppError');
 
 const app = express();
-
+app.use(cors());
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -39,6 +40,7 @@ app.use(
     limit: '10kb'
   })
 ); //client can not able request gt : 10kb
+app.use(cookieParser());
 
 //protect app againts NOSQL Injection with delete any $
 app.use(mongoSanitizer());

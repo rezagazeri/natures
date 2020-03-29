@@ -16,11 +16,11 @@ const reviewSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  users: {
+  user: {
     type: mongoose.Schema.ObjectId,
     ref: 'User'
   },
-  tours: {
+  tour: {
     type: mongoose.Schema.ObjectId,
     ref: 'Tour'
   }
@@ -35,20 +35,20 @@ const reviewSchema = new mongoose.Schema({
 
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
-    path: 'users',
-    select: 'name'
+    path: 'user',
+    select: 'name photo'
   });
   next();
 });
 reviewSchema.statics.calcAverageRatings = async function (tourId) {
   const stats = await this.aggregate([{
       $match: {
-        tours: tourId
+        tour: tourId
       }
     },
     {
       $group: {
-        _id: '$tours',
+        _id: '$tour',
         nRating: {
           $sum: 1
         },
@@ -75,7 +75,7 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
 
 reviewSchema.post('save', function () {
   // this points to current review
-  this.constructor.calcAverageRatings(this.tours);
+  this.constructor.calcAverageRatings(this.tour);
 });
 
 reviewSchema.pre(/^findOneAnd/, async function (next) {
@@ -83,7 +83,7 @@ reviewSchema.pre(/^findOneAnd/, async function (next) {
   next();
 })
 reviewSchema.post(/^findOneAnd/, async function () {
-  await this.rev.constructor.calcAverageRatings(this.rev.tours)
+  await this.rev.constructor.calcAverageRatings(this.rev.tour)
 
 })
 
