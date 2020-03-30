@@ -17,11 +17,12 @@ const {
   ressetPasswort,
   protected,
   updatePasswort,
-  routRestrictOnlyBy
+  routRestrictOnlyBy,
+  logout
 } = require('../controllers/authUsercontroller');
 
 const router = express.Router();
-
+router.route('/logout').get(logout);
 router.route('/signup').post(signup);
 router.route('/login').post(login);
 router.route('/forgotpasswort').post(forgotpasswort);

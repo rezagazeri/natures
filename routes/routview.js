@@ -6,11 +6,12 @@ const router = express.Router({
 const {
     renderOverviewPage,
     renderTourPage,
-    renderLoginPage
+    renderLoginPage,
 } = require("./../controllers/viewController");
 const {
     isLoggesIn
 } = require("./../controllers/authUsercontroller");
+
 
 router.use(isLoggesIn);
 

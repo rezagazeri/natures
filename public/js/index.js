@@ -5,10 +5,12 @@ import {
     mapbox
 } from './mapbox';
 import {
-    login
+    login,
+    logout
 } from './login';
 
 const mapBox = document.getElementById('map');
+const logoutUser = document.querySelector('.nav__el--logout');
 if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
     mapbox(locations);
@@ -21,3 +23,6 @@ if (loginForm)
         const passwort = document.getElementById('password').value;
         login(name, passwort);
     });
+if (logoutUser) {
+    logoutUser.addEventListener('click', logout);
+}
