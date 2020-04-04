@@ -7,16 +7,16 @@ const {
     renderOverviewPage,
     renderTourPage,
     renderLoginPage,
+    renderAcountPage
 } = require("./../controllers/viewController");
 const {
-    isLoggesIn
+    isLoggesIn,
+    protected
 } = require("./../controllers/authUsercontroller");
 
-
-router.use(isLoggesIn);
-
-router.route("/").get(renderOverviewPage);
-router.route("/tour/:slug").get(renderTourPage);
-router.route("/login").get(renderLoginPage);
+router.route("/").get(isLoggesIn, renderOverviewPage);
+router.route("/tour/:slug").get(isLoggesIn, renderTourPage);
+router.route("/login").get(isLoggesIn, renderLoginPage);
+router.route("/me").get(protected, renderAcountPage);
 
 module.exports = router;

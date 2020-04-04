@@ -25,17 +25,8 @@ const handlerDuplicateError = err => {
   const message = `Duplicate field value: ${value}. Please use another value!`;
   return new AppError(message, 400);
 };
-const sendErrorDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack
-  });
-};
-//send error to client in  production mode
-const sendErrorprod = (err, res) => {
-  // Operational, trusted error: send message to client
+
+const errorHandlerInApiRoutProd = (err, res) => {
   if (err.isOperational) {
     res.status(err.statusCode).json({
       status: err.status,
@@ -53,6 +44,43 @@ const sendErrorprod = (err, res) => {
       message: 'Something went very wrong!'
     });
   }
+}
+const sendErrorDev = (err, req, res) => {
+  if (req.originalUrl.startsWith('/api')) {
+    res.status(err.statusCode).json({
+      status: err.status,
+      error: err,
+      message: err.message,
+      stack: err.stack
+    });
+  } else {
+    res.status(err.statusCode).render('error', {
+      titel: 'error happened!',
+      msg: err.message
+    });
+  }
+};
+//send error to client in  production mode
+const sendErrorprod = (err, req, res) => {
+  if (req.originalUrl.startsWith('/api')) return errorHandlerInApiRoutProd(err, res);
+
+  if (err.isOperational) {
+    return res.status(err.statusCode).render('error', {
+      titel: 'error happened',
+      msg: err.message
+    });
+  }
+  // Programming or other unknown error: don't leak error details
+  // 1) Log error
+  console.error('ERROR 💥', err);
+
+  // 2) Send generic message
+  return res.status(500).render('error', {
+    status: 'error',
+    message: 'Something went very wrong!'
+  });
+  // Operational, trusted error: send message to client
+
 };
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
@@ -61,13 +89,14 @@ module.exports = (err, req, res, next) => {
     let error = {
       ...err
     };
+    error.message = err.message;
     if (error.name === 'CastError') error = handlerCastError(error);
     if (error.code === 11000) error = handlerDuplicateError(error);
     if (error.name === 'ValidationError') error = handlerValidatorError(error);
     if (error.name === 'JsonWebTokenError') error = handlerJsonWebTokenError();
     if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
-    sendErrorprod(error, res);
+    sendErrorprod(error, req, res);
   } else if (process.env.NODE_ENV === 'development') {
-    sendErrorDev(err, res);
+    sendErrorDev(err, req, res);
   }
 };

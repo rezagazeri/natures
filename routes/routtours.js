@@ -9,7 +9,9 @@ const {
   getToursatats,
   getMonthlyPlan,
   getDistanceToursCenter,
-  getAllTourDistances
+  getAllTourDistances,
+  tourPhotosUpload,
+  tourPhotoResize
 } = require('./../controllers/tourcontrollers');
 const {
   routRestrictOnlyBy,
@@ -34,10 +36,11 @@ router
   .get(getDistanceToursCenter);
 router.route('/distances/:lnglat/unit/:unit').get(getAllTourDistances);
 
+
 router
   .route('/:id')
   .get(getTour)
-  .patch(updateTour)
+  .patch(protected, tourPhotosUpload, tourPhotoResize, updateTour)
   .delete(protected, routRestrictOnlyBy('admin', 'lead-guide'), deleteTour);
 
 module.exports = router;

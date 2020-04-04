@@ -113,7 +113,6 @@ exports.protected = catchError(async (req, res, next) => {
   } else if (req.cookies.JWT) {
     token = req.cookies.JWT;
   }
-
   if (!token) {
     return next(
       new AppError("you are not login .please get try to access . ", 401)
@@ -134,6 +133,8 @@ exports.protected = catchError(async (req, res, next) => {
     );
   }
   req.user = freshUser;
+  res.locals.user = freshUser; //send var= user to client 
+
   next();
 });
 //=======================protect route in view  =====================================
@@ -146,7 +147,7 @@ exports.isLoggesIn = async (req, res, next) => {
         req.cookies.JWT,
         process.env.SECRET_CODE
       );
-      //3)check if user is still exists
+      //3)check if user is still exists 
       const freshUser = await User.findById(decoded.id);
       if (!freshUser) {
         return next();
@@ -160,7 +161,6 @@ exports.isLoggesIn = async (req, res, next) => {
     } catch (err) {
       return next();
     }
-
   }
   next();
 };
